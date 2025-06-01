@@ -8,18 +8,6 @@ const verifyToken = require("../backend/authMiddleware");
 // Create Category
 router.post("/", verifyToken, async (req, res) => {
   try {
-    // // Extract Firebase ID token from Authorization header
-    // const token = req.headers.authorization?.split(" ")[1];
-    // if (!token) return res.status(401).json({ message: "Unauthorized" });
-
-    // // Verify Firebase token and extract firebaseUID
-    // const decodedToken = await admin.auth().verifyIdToken(token);
-    // const firebaseUID = decodedToken.uid;
-
-    // // Find MongoDB user using firebaseUID
-    // const user = await User.findOne({ firebaseUID });
-    // if (!user) return res.status(404).json({ message: "User not found" });
-
     if (!req.user) return res.status(401).json({ message: "Unauthorized" });
     const userObject = req.user;
     const firebaseUID = userObject.uid;
@@ -55,7 +43,9 @@ router.get("/", verifyToken, async (req, res) => {
       // Extract user details from req.user
       const firebaseUID = req.user.uid;
       // Find MongoDB user using firebaseUID
+      console.log("Firebase UID:", firebaseUID);
       const user = await User.findOne({ firebaseUid: firebaseUID });
+      console.log("User found:", user);
       if (!user) return res.status(404).json({ message: "User not found" });
 
       // Get all categories linked to the user's MongoDB _id
@@ -68,6 +58,28 @@ router.get("/", verifyToken, async (req, res) => {
     res.status(500).json({ error: err.message });
   }
 });
+
+// router.get("/", verifyToken, async (req, res) => {
+//   try {
+//     if (req.user) {
+//       // Extract user details from req.user
+//       const firebaseUID = req.user.uid;
+//       // Find MongoDB user using firebaseUID
+//       console.log("Firebase UID:", firebaseUID);
+//       const user = await User.findOne({ firebaseUid: firebaseUID });
+//       console.log("User found:", user);
+//       if (!user) return res.status(404).json({ message: "User not found" });
+
+//       // Get all categories linked to the user's MongoDB _id
+//       const categories = await Category.find({ userId: user._id });
+//       res.json(categories);
+//     } else {
+//       res.status(401).json({ message: "Unauthorized" });
+//     }
+//   } catch (err) {
+//     res.status(500).json({ error: err.message });
+//   }
+// });
 
 // Delete Category by Name
 router.delete("/:name", verifyToken, async (req, res) => {

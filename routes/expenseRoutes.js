@@ -103,4 +103,41 @@ router.get("/", verifyToken, async (req, res) => {
   }
 });
 
+// Delete Expense
+router.delete("/:expenseId", verifyToken, async (req, res) => {
+  try {
+    if (req.user) {
+      // Extract user details from req.user
+      const firebaseUID = req.user.uid;
+
+      // Find MongoDB user using firebaseUID
+      const user = await User.findOne({ firebaseUid: firebaseUID });
+      if (!user) return res.status(404).json({ message: "User not found" });
+
+      const { expenseId } = req.params;
+
+      // Find the expense and ensure it belongs to the user
+      const expense = await Expense.findOne({
+        _id: expenseId,
+        userId: user._id,
+      });
+      if (!expense) {
+        return res
+          .status(404)
+          .json({ message: "Expense not found or unauthorized" });
+      }
+
+      // Delete the expense
+      await Expense.deleteOne({ _id: expenseId });
+
+      res.status(200).json({ message: "Expense deleted successfully" });
+    } else {
+      res.status(401).json({ message: "Unauthorized" });
+    }
+  } catch (err) {
+    console.error("Error deleting expense:", err);
+    res.status(500).json({ error: err.message });
+  }
+});
+
 module.exports = router;
