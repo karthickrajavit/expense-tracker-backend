@@ -26,15 +26,6 @@ app.use(cors(corsOptions));
 app.use("/categories", categoryRoutes);
 app.use("/expenses", expenseRoutes);
 
-// MongoDB Connection
-// const mongoURI = "mongodb://127.0.0.1:27017/expense_tracker";
-// Uncomment the below line to connect to MongoDB Atlas
-// const mongoURI =
-//   "mongodb+srv://karthickrajavit:9UruwTyTyL3FGHO3@expensetracker.s3e5zp3.mongodb.net/expenseTracker?retryWrites=true&w=majority&appName=expenseTracker";
-// mongoose
-//   .connect(mongoURI, { useNewUrlParser: true, useUnifiedTopology: true })
-//   .then(() => console.log("Connected to MongoDB"))
-//   .catch((err) => console.log("MongoDB Connection Error:", err));
 (async () => {
   try {
     // Connect to MongoDB using the function that retrieves the URI
@@ -52,10 +43,6 @@ app.use((err, req, res, next) => {
 app.get("/", (req, res) => {
   res.send("Expense Tracker Backend is Running");
 });
-
-// Start Server
-// const PORT = process.env.PORT || 5000;
-// app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
 
 //Only run this if not running in Lambda
 if (require.main === module) {
