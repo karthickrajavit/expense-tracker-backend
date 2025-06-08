@@ -1,11 +1,9 @@
-require("dotenv").config();
-const express = require("express");
-const connectDB = require("./database"); // Import the function to get MongoDB URI
-const mongoose = require("mongoose");
-const serverless = require("serverless-http");
-const cors = require("cors");
-const categoryRoutes = require("./routes/categoryRoutes");
-const expenseRoutes = require("./routes/expenseRoutes");
+import config from "./config/development.js";
+import express from "express";
+import connectDB from "./database.js"; // Adjust the path if needed and ensure default export
+import cors from "cors";
+import categoryRoutes from "./routes/categoryRoutes.js";
+import expenseRoutes from "./routes/expenseRoutes.js";
 
 const app = express();
 app.use(express.json());
@@ -44,16 +42,15 @@ app.get("/", (req, res) => {
   res.send("Expense Tracker Backend is Running");
 });
 
-//Only run this if not running in Lambda
-if (require.main === module) {
-  const PORT = process.env.PORT || 5000;
-  app.listen(PORT, () => {
-    console.log(`Server running locally on port ${PORT}`);
-  });
-}
+const PORT = config.Port; // Default to 5000 if not specified
+console.log(`API Port: ${config.Port}`);
+app.listen(PORT, () => {
+  console.log(`Server running locally on port ${PORT}`);
+});
 
 //Export the app for AWS Lambda
-module.exports = app;
+// module.exports = app;
+export default app;
 // Uncomment the above lines if you want to run the server locally
 
 // Export for AWS Lambda

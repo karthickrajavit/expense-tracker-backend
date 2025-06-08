@@ -1,35 +1,41 @@
-const admin = require("firebase-admin");
-const AWS = require("aws-sdk");
-
-// Configure AWS Secrets Manager
-const secretsManager = new AWS.SecretsManager({
-  region: "ap-south-1", // Replace with your AWS region
-});
+import admin from "firebase-admin";
+import config from "../config/development.js";
 
 async function initializeFirebaseAdmin() {
   try {
-    // Retrieve the secret from AWS Secrets Manager
-    const secretName = "prod/firebase-admin-secret"; // Replace with your secret name
-    const secretValue = await secretsManager
-      .getSecretValue({ SecretId: secretName })
-      .promise();
+    const configs = config;
 
-    // Parse the secret value (assuming it's stored as JSON)
-    const serviceAccount = JSON.parse(secretValue.SecretString);
+    // ✅ Fix: initialize only if credentials are provided
+    if (configs && configs.firebaseCredentails) {
+      const serviceAccount = configs.firebaseCredentails;
 
-    // Initialize Firebase Admin if not already initialized
-    if (!admin.apps.length) {
-      admin.initializeApp({
-        credential: admin.credential.cert(serviceAccount), 
-      });
+      // Check if the service account credentials are valid
+      if (
+        !serviceAccount ||
+        !serviceAccount.private_key ||
+        !serviceAccount.client_email
+      ) {
+        throw new Error(
+          "Firebase service account credentials are not properly configured."
+        );
+      }
+
+      // Initialize Firebase Admin if not already initialized
+      if (!admin.apps.length) {
+        admin.initializeApp({
+          credential: admin.credential.cert(serviceAccount),
+        });
+      }
+    } else {
+      throw new Error("Firebase credentials not found in config.");
     }
   } catch (error) {
-    console.error("Error initializing Firebase Admin:", error);
+    console.error("❌ Error initializing Firebase Admin:", error);
     throw error;
   }
 }
 
 // Call the initialization function
-initializeFirebaseAdmin();
+await initializeFirebaseAdmin();
 
-module.exports = admin;
+export default admin;

@@ -1,10 +1,9 @@
-const express = require("express");
+import express from "express";
 const router = express.Router();
-const Expense = require("../models/Expense");
-const Category = require("../models/Category");
-const User = require("../models/User");
-
-const verifyToken = require("../backend/authMiddleware");
+import Expense from "../models/Expense.js";
+import Category from "../models/Category.js";
+import User from "../models/User.js";
+import verifyToken from "../backend/authMiddleware.js";
 
 // Create Expense
 router.post("/", verifyToken, async (req, res) => {
@@ -140,4 +139,4 @@ router.delete("/:expenseId", verifyToken, async (req, res) => {
   }
 });
 
-module.exports = router;
+export default router;

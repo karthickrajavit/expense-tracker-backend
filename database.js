@@ -1,19 +1,17 @@
-const mongoose = require("mongoose");
-const AWS = require("aws-sdk");
+import { connect } from "mongoose";
+import config from "./config/development.js"; // Import the configuration file
 
 // AWS Secrets Manager client
-const secretsManager = new AWS.SecretsManager({ region: "ap-south-1" });
 
 async function getMongoURI() {
   try {
-    const secretData = await secretsManager
-      .getSecretValue({ SecretId: "prod/MongoAtlasCredential" })
-      .promise();
-    console.log("Secret Data:", secretData);
-    if ("SecretString" in secretData) {
-      const secrets = JSON.parse(secretData.SecretString);
-      return secrets.MONGO_URI;
+    // const env = process.env.NODE_ENV || "development";
+    const mongoUri = config.mongoUri;
+
+    if (!mongoUri) {
+      throw new Error("MongoDB URI not found in configuration");
     }
+    return mongoUri;
   } catch (error) {
     console.error("Error retrieving MongoDB URI:", error);
     throw new Error("Failed to fetch MongoDB URI");
@@ -23,7 +21,7 @@ async function getMongoURI() {
 async function connectDB() {
   try {
     const mongoURI = await getMongoURI();
-    await mongoose.connect(mongoURI, {
+    await connect(mongoURI, {
       useNewUrlParser: true,
       useUnifiedTopology: true,
     });
@@ -34,4 +32,4 @@ async function connectDB() {
   }
 }
 
-module.exports = connectDB;
+export default connectDB;

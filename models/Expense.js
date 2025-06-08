@@ -1,4 +1,4 @@
-const mongoose = require("mongoose");
+import mongoose from "mongoose";
 
 const expenseSchema = new mongoose.Schema({
   category: {
@@ -12,4 +12,4 @@ const expenseSchema = new mongoose.Schema({
   userId: { type: mongoose.Schema.Types.ObjectId, ref: "User", required: true },
 });
 
-module.exports = mongoose.model("Expense", expenseSchema);
+export default mongoose.model("Expense", expenseSchema);

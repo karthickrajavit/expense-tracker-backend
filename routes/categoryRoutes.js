@@ -1,9 +1,8 @@
-const express = require("express");
+import express from "express";
 const router = express.Router();
-const Category = require("../models/Category");
-const User = require("../models/User");
-const admin = require("../backend/firebaseAdmin");
-const verifyToken = require("../backend/authMiddleware");
+import Category from "../models/Category.js";
+import User from "../models/User.js";
+import verifyToken from "../backend/authMiddleware.js";
 
 // Create Category
 router.post("/", verifyToken, async (req, res) => {
@@ -106,4 +105,4 @@ router.delete("/:name", verifyToken, async (req, res) => {
   }
 });
 
-module.exports = router;
+export default router;
