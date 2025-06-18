@@ -4,6 +4,7 @@ import connectDB from "./database.js"; // Adjust the path if needed and ensure d
 import cors from "cors";
 import categoryRoutes from "./routes/categoryRoutes.js";
 import expenseRoutes from "./routes/expenseRoutes.js";
+import graphExpense from "./routes/graphExpense.js"; // Assuming this is the correct path for summary routes
 
 const app = express();
 app.use(express.json());
@@ -23,6 +24,7 @@ app.use(cors(corsOptions));
 
 app.use("/categories", categoryRoutes);
 app.use("/expenses", expenseRoutes);
+app.use("/data", graphExpense); // Assuming summary routes are in expenseRoutes
 
 (async () => {
   try {
